@@ -10,7 +10,7 @@
 				<span style="font-size: 18pt;">Adminstration login</span>
 				<span style="font-size: 18pt;">Enter security key</span>
 				<input type="password" name="password">
-				<input type="submit">
+				<input type="submit" value="Login">
 			</form>
 	</body>
 </html>
