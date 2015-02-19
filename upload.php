@@ -24,7 +24,7 @@
                         echo '<b>2</b> File is a <b>image</b>.<br>';
                         $uploadOk = 1;
                     } else {
-                        echo "<b>2</b> <span style='color: red'>Error:</span><br>File is not an <b>image</b>.<br>";
+                        echo "<b>2</b> <span style='color: red'>Error:</span>File is not an <b>image</b>.<br>";
                         $uploadOk = 0;
                     }
                 }
