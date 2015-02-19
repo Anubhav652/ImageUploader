@@ -12,6 +12,7 @@
    	 		<input type="edit" name="author" id="name" value="Your Name">
    	 		<input type="submit" value="Upload Image" name="submit">
 		</form>
+		<h1 style="font-size: 18pt;">Are you admin? <a href="admin.php"> Click here.</a></h1>
 		<div class="block" >
 			<span style="font-size: 18pt;">Images</span>
 			<?php
