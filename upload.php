@@ -18,10 +18,10 @@
                 $imageFileType = pathinfo($target_file,PATHINFO_EXTENSION);
                 // Check if image file is a actual image or fake image
                 if($_POST['author']=="Your Name") {
-                    $uploadOk - 0;
+                    $uploadOk = 0;
                     echo '<b>0</b> Bad author-name';
                 } elseif($_POST['author']=="") {
-                    $uploadOk - 0;
+                    $uploadOk = 0;
                     echo '<b>0</b> Bad author-name';
                 }
                 if(isset($_POST["submit"])) {
