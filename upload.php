@@ -17,13 +17,6 @@
                 $uploadOk = 1;
                 $imageFileType = pathinfo($target_file,PATHINFO_EXTENSION);
                 // Check if image file is a actual image or fake image
-                if($_POST['author']=="Your Name") {
-                    $uploadOk = 0;
-                    echo '<b>0</b> Bad author-name';
-                } elseif($_POST['author']=="") {
-                    $uploadOk = 0;
-                    echo '<b>0</b> Bad author-name';
-                }
                 if(isset($_POST["submit"])) {
                     $check = getimagesize($_FILES["fileToUpload"]["tmp_name"]);
                     echo '<b>1</b> Checking file type.<br>';
@@ -34,6 +27,14 @@
                         echo "<b>2</b> <span style='color: red'>Error:</span><br>File is not an <b>image</b>.<br>";
                         $uploadOk = 0;
                     }
+                }
+                // Check for author name
+                if($_POST['author']=="Your Name") {
+                    $uploadOk = 0;
+                    echo '<b>Author-line</b> Bad author-name';
+                } elseif($_POST['author']=="") {
+                    $uploadOk = 0;
+                    echo '<b>Author-line</b> Bad author-name';
                 }
                 // Check if file already exists
                 echo '<b>3</b> Checking for file exist<br>';
