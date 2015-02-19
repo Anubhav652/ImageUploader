@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
     <head>
-        <title>Homepage - Images</title>
+        <title>Uploader - Images</title>
         <link rel="stylesheet" type="text/css" href="design/style.css"> 
     </head>
     <body>
@@ -31,10 +31,10 @@
                 // Check for author name
                 if($_POST['author']=="Your Name") {
                     $uploadOk = 0;
-                    echo '<b>Author-line</b> Bad author-name';
+                    echo '<b>Author-line</b> Bad author-name<br>';
                 } elseif($_POST['author']=="") {
                     $uploadOk = 0;
-                    echo '<b>Author-line</b> Bad author-name';
+                    echo '<b>Author-line</b> Bad author-name<br>';
                 }
                 // Check if file already exists
                 echo '<b>3</b> Checking for file exist<br>';
