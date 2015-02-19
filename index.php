@@ -9,6 +9,7 @@
 		<form action="upload.php" method="post" enctype="multipart/form-data">
     		<span style="font-size: 14pt;">Select image to upload:</span>
     		<input type="file" name="fileToUpload" id="fileToUpload">
+   	 		<input type="edit" name="author" id="name" value="Your Name">
    	 		<input type="submit" value="Upload Image" name="submit">
 		</form>
 		<div class="block" >
@@ -21,16 +22,19 @@
 				$totaluploads = 0;
 				$directories = array_diff(scandir($target), $weeds);   
 				foreach($directories as $value) {
-   					if ( $uploads == 4 ) {
-   						echo '<br>';
-   						$uploads = 0;
-   					}
-      				$uploads = $uploads+1;
-      				$totaluploads = $totaluploads+1;
-      				echo '<a href="uploads/view.php?name='.$value.'"> <img src="uploads/'.$value.'" width="50" height="50" /> </a>';
-				}		 
-				if( $totaluploads == 0 ) {
-					echo '<span style="color: red; font-size: 12pt;"> No images were uploaded. </span>';
+   					if ( strpos( $value, ".info" ) == false ) {
+
+	   					if ( $uploads == 4 ) {
+   							echo '<br>';
+   							$uploads = 0;
+   						}
+      					$uploads = $uploads+1;
+      					$totaluploads = $totaluploads+1;
+      					echo '<a href="uploads/view.php?name='.$value.'"> <img src="uploads/'.$value.'" width="50" height="50" /> </a>';
+					}		 
+					if( $totaluploads == 0 ) {
+						echo '<span style="color: red; font-size: 12pt;"> No images were uploaded. </span>';
+					}
 				}
 			?>
 		</div>
