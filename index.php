@@ -32,9 +32,9 @@
       					$totaluploads = $totaluploads+1;
       					echo '<a href="uploads/view.php?name='.$value.'"> <img src="uploads/'.$value.'" width="50" height="50" /> </a>';
 					}		 
-					if( $totaluploads == 0 ) {
-						echo '<span style="color: red; font-size: 12pt;"> No images were uploaded. </span>';
-					}
+				}
+				if( $totaluploads == 0 ) {
+					echo '<span style="color: red; font-size: 12pt;"> No images were uploaded. </span>';
 				}
 			?>
 		</div>
