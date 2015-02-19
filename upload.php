@@ -71,6 +71,7 @@
                     echo '<b>11</b> Starting upload process <br>'; 
                     if (move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file)) {
                         $handle = fopen("uploads/".basename( $_FILES["fileToUpload"]["name"]).'.info', "w+");
+                        fwrite( $handle, $_POST['author'] );
                         echo "<b>12</b> The file ". basename( $_FILES["fileToUpload"]["name"]). " has been uploaded.<br>";
                     } 
                     else {
