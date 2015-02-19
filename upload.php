@@ -30,11 +30,9 @@
                 }
                 // Check for author name
                 if($_POST['author']=="Your Name") {
-                    $uploadOk = 0;
-                    echo '<b>Author-line</b> Bad author-name<br>';
+                    $_POST['author'] = "Anon";
                 } elseif($_POST['author']=="") {
-                    $uploadOk = 0;
-                    echo '<b>Author-line</b> Bad author-name<br>';
+                    $_POST['author'] = "Anon";
                 }
                 // Check if file already exists
                 echo '<b>3</b> Checking for file exist<br>';
