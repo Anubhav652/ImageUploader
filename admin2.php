@@ -21,7 +21,7 @@
 				fclose( $targetfile );
 			}
 		}
-	echo '
+	echo ' 
 <!DOCTYPE HTML>
 <html>
 	<head>
@@ -49,7 +49,7 @@
    					if ( strpos( $value, ".info" ) == false ) {
 
 	   					if ( $uploads == 2 ) {
-   							echo '<br><br><br><br>';
+   							echo '<br><br><br><br><br>';
    							$uploads = 0;
    						}
       					$uploads = $uploads+1;
@@ -58,6 +58,7 @@
       					echo '<a href="uploads/view.php?name='.$value.'"> <img src="uploads/'.$value.'" width="50" height="50" /> </a>';
 						echo '<br><b style="color: grey; text-decoration: none; font-size: 7pt;">Author name: '.file_get_contents('uploads/'.$value.'.info').'</b><br><a class="button" href="admin2.php?pass='.$v.'&action=delete&target='.$value.'" style="color: red; text-decoration: none; font-size: 10pt; height: 50px;">Delete</a>';
 						echo '<br><button class="button" id="changeAuthor">Change author name</button>';
+						echo '<br><button class="button" id="suspendImage">Suspend image</button>';
 					}		 
 				}
 				if( $totaluploads == 0 ) {
