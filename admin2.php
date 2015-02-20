@@ -14,6 +14,11 @@
 			if ($action == 'delete') {
 				unlink('uploads/'.$targetfile);
 				unlink('uploads/'.$targetfile.'.info');
+			} elseif ($action == 'author') {
+				$targetfile = fopen( 'uploads/'.$_GET['target'].'.info', "w" );
+				$newauth = $_GET['authorname'];
+				fwrite($targetfile, $newauth);
+				fclose( $targetfile );
 			}
 		}
 	echo '
@@ -22,6 +27,8 @@
 	<head>
 		<title>Homepage - Images</title>
 		<link rel="stylesheet" type="text/css" href="design/style.css">	
+		<script src="http://code.jquery.com/jquery-1.11.2.min.js"></script>
+		<script src="author.js"></script>
 	</head>
 	<body oncontextmenu="return false;">
 		<h1 class="title">Anubhav\'s Image Uploader</h1><br><br><br>
@@ -41,14 +48,16 @@
 				foreach($directories as $value) {
    					if ( strpos( $value, ".info" ) == false ) {
 
-	   					if ( $uploads == 4 ) {
-   							echo '<br><br>';
+	   					if ( $uploads == 2 ) {
+   							echo '<br><br><br><br>';
    							$uploads = 0;
    						}
       					$uploads = $uploads+1;
       					$totaluploads = $totaluploads+1;
+      					$v = $_GET['pass'];
       					echo '<a href="uploads/view.php?name='.$value.'"> <img src="uploads/'.$value.'" width="50" height="50" /> </a>';
-						echo '<br><a href="admin2.php?pass='.$v.'&action=delete&target='.$value.'" style="color: red; text-decoration: none; font-size: 10pt;">Delete</a>';
+						echo '<br><b style="color: grey; text-decoration: none; font-size: 7pt;">Author name: '.file_get_contents('uploads/'.$value.'.info').'</b><br><a class="button" href="admin2.php?pass='.$v.'&action=delete&target='.$value.'" style="color: red; text-decoration: none; font-size: 10pt; height: 50px;">Delete</a>';
+						echo '<br><button class="button" id="changeAuthor">Change author name</button>';
 					}		 
 				}
 				if( $totaluploads == 0 ) {
