@@ -7,6 +7,7 @@
 			$loadwebsite = true;
 		}
 	}
+	
 	if ($loadwebsite == true) {
 		if (isset( $_GET['action'] ) ) {
 			$action = $_GET['action'];
