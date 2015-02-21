@@ -1,16 +1,52 @@
 <!DOCTYPE HTML>
-<html>
+<html lang="en">
     <head>
-        <title>Uploader - Images</title>
-        <link rel="stylesheet" type="text/css" href="design/style.css"> 
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>
+            Homepage - Images
+        </title>
+        <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+        <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
     </head>
-    <body>
-        <h1 class="title">Anubhav's Image Uploader</h1><br><br><br>
+    <body oncontextmenu="return false;">
+          <div class="jumbotron">
+            <h1>
+                Anubhav's Image Uploader
+            </h1>
+        </div>
+        <nav class="navbar navbar-inverse">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="index.php">
+                        Anubhav's Image Uploader
+                    </a>
+                </div>
+                <div>
+                    <ul class="nav navbar-nav">
+                        <li class="active">
+                            <a href="index.php">
+                                Home
+                            </a>
+                        </li>
+                        <li>
+                            <a href="admin.php">
+                                Admin
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        <br>
+        <br>
+        <br>
         <div class="block" style="height: 50vh;">
             You are at image uploading section.
             <a href="index.php" style="color: blue;">Return</a>
         </div>
-        <div class="console">
+        <div class="container">
             <?php
                 $target_dir = "uploads/";
                 $target_file = $target_dir . basename($_FILES["fileToUpload"]["name"]);
