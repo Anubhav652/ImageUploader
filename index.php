@@ -11,11 +11,6 @@
   		<script src="js/bootstrap.min.js"></script>
 	</head>
 	<body oncontextmenu="return false;">
-		  <div class="jumbotron">
-    		<h1>
-    			Anubhav's Image Uploader
-    		</h1>
-  		</div>
   		<nav class="navbar navbar-inverse">
   			<div class="container-fluid">
     			<div class="navbar-header">
