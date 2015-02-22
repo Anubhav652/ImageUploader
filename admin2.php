@@ -45,12 +45,12 @@
     			</div>
     			<div>
       				<ul class="nav navbar-nav">
-        				<li class="active">
+        				<li>
         					<a href="index.php">
         						Home
         					</a>
         				</li>
-        				<li>
+        				<li class="active">
         					<a href="admin.php">
         						Admin
         					</a>
