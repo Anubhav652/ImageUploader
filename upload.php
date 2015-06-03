@@ -9,6 +9,21 @@
         <link rel="stylesheet" href="css/bootstrap.min.css">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
         <script src="js/bootstrap.min.js"></script>
+        <script>
+            function dangerCheck( points, text ) {
+                if( points == 0 ) {
+                    text.setAttribute( 'class', 'text-danger' );
+                }
+            }
+            function progressandtext( p, t ) {
+                var progressBar = document.getElementById( 'pro' );
+                var text = document.getElementById( 'text' );
+                progressBar.setAttribute( 'aria-valuenow', p );
+                progressBar.setAttribute( 'style', 'width: ' + p + '%' );
+                text.innerHTML = t;
+                dangerCheck( p, text );
+            }
+        </script>
     </head>
     <body oncontextmenu="return false;">
         <nav class="navbar navbar-inverse">
@@ -37,11 +52,14 @@
         <br>
         <br>
         <br>
-        <div class="block" style="height: 50vh;">
-            You are at image uploading section.
-            <a href="index.php" style="color: blue;">Return</a>
-        </div>
         <div class="container">
+            <b class="text-primary" id="text">Please wait, uploading the image!</b>
+            <div class="progress">
+                <div class="progress-bar" role="progressbar" aria-valuenow="0"
+                aria-valuemin="0" aria-valuemax="50" style="width:1%" id="pro">
+                <span class="sr-only"></span>
+            </div>
+        </div>
             <?php
                 $target_dir = "uploads/";
                 $target_file = $target_dir . basename($_FILES["fileToUpload"]["name"]);
@@ -50,13 +68,13 @@
                 // Check if image file is a actual image or fake image
                 if(isset($_POST["submit"])) {
                     $check = getimagesize($_FILES["fileToUpload"]["tmp_name"]);
-                    echo '<b>1</b> Checking file type.<br>';
+                    echo '<script>progressandtext( 5, "Checking for file type" )</script>';
                     if($check !== false) {
-                        echo '<b>2</b> File is a <b>image</b>.<br>';
+                        echo '<script>progressandtext( 10, "File is a image - Continue" )</script>';;
                         $uploadOk = 1;
                     } else {
-                        echo "<b>2</b> <span style='color: red'>Error:</span>File is not an <b>image</b>.<br>";
-                        $uploadOk = 0;
+                        echo '<script>progressandtext( 0, "Sorry file upload was failed due to: ERROR CODE IMAGE - 001: File was not an image | Seeing this error even if file was an image? Contact the webmaster!" )</script>';;
+                        return;
                     }
                 }
                 // Check for author name
@@ -66,48 +84,46 @@
                     $_POST['author'] = "Anon";
                 }
                 // Check if file already exists
-                echo '<b>3</b> Checking for file exist<br>';
+                echo '<script>progressandtext( 15, "Checking for file existence" )</script>';
                 if (file_exists($target_file)) {
-                    echo "<b>4</b> <span style='color: red'>Error:</span> Sorry, file already exists.<br>";
-                    $uploadOk = 0;
+                    echo '<script>progressandtext( 0, "Sorry file upload was failed due to: ERROR CODE IMAGE - 002: Target already exists | Resolve this issue by renaming your file | Seeing this error even if file was an image? Contact the webmaster! " )</script>';;
+                    return;
                 } else {
-                    echo '<b>4</b> File doesn\'t exist, continuing process.<br>';
+                    echo '<script>progressandtext( 20, "A file with this file name doesn\'t exist - Continue" )</script>';
                 }
-                echo '<b>5</b> Checking file size.<br>';
+                echo '<script>progressandtext( 25, "Checking for file size - Max FILE SIZE is 5MB" )</script>';
                 // Check file size
                 if ($_FILES["fileToUpload"]["size"] > 5000000) {
-                    echo "<b>6</b> <span style='color: red'>Error:</span> Sorry, your file is larger than 5 MB.<br>";
-                    $uploadOk = 0;
+                    echo "<script>progressandtext( 0, 'Sorry file upload was failed due to: ERROR CODE IMAGE - 003: File size was more than 5MB!' )</script>";;
+                    return;
                 } else {
-                    echo '<b>6</b> File is less than 5 MB. Continuing process!<br>';
+                    echo '<script>progressandtext( 30, "File size is less than 5 MB - Continue" )</script>';
                 }
                 // Allow certain file formats
-                echo '<b>7</b> Checking the file format.<br>';
+                echo '<script>progressandtext( 35, "Checking for file extensions - Only JPG, JPEG and PNG files are allowed!" )</script>';
                 if($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg" ) {
-                    echo "<b>8</b> <span style='color: red'>Error:</span> Sorry, only JPG, JPEG and PNG files are allowed.<br>";
-                    $uploadOk = 0;
+                    echo "<script>progressandtext( 0, 'Sorry file upload was failed due to: ERROR CODE IMAGE - 004: File was not uploaded due to the extension of the file. Allowed extensions are: JPG, JPEG, PNG.' )</script>";;
+                    return;
                 }
-                if ($uploadOK == 1) {
-                    echo '<b>8</b> File format is valid. <br>';
+                if ($uploadOk == 1) {
+                    echo '<script>progressandtext( 25, "Checking for file size - Max FILE SIZE is 5MB" )</script>';
                 }
                 // Check if $uploadOk is set to 0 by an error
-                echo '<b>9</b> Checking if file can upload. <br>';
+                echo '<script>progressandtext( 30, "Preparing to upload the file!" )</script>';
                 if ($uploadOk == 0) {
-                    echo "<b>10</b> <span style='color: red'>Error:</span> Sorry, your file was not uploaded.<br>";
+                    echo "<script>progressandtext( 0, 'Sorry file upload was failed due to: ERROR CODE IMAGE - UNKNOWN: File was not uploaded due to an unknown reason!' )</script>";
                     // if everything is ok, try to upload file
                 } 
                 else {
-                    echo '<b>10</b> File has no problems.<br>';
-                    echo '<b>11</b> Starting upload process <br>'; 
+                    echo '<script>progressandtext( 40, "File is ready to be uploaded - Uploading" )</script>';
+                    echo '<script>progressandtext( 45, "File is now uploading" )</script>'; 
                     if (move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file)) {
                         $handle = fopen("uploads/".basename( $_FILES["fileToUpload"]["name"]).'.info', "w+");
                         fwrite( $handle, $_POST['author'] );
-                        echo "<b>12</b> The file ". basename( $_FILES["fileToUpload"]["name"]). " has been uploaded.<br>";
-                    } 
+                        echo "<script>progressandtext( 50, 'You have uploaded ".basename( $_FILES["fileToUpload"]["name"])." file!' )</script>";
+                    }
                     else {
-                        echo "<b>12</b> <span style='color: red'>Error:</span> Sorry, there was an error uploading your file.<br>";
-                        echo 'Some debug info: ';
-                        print_r($_FILES);
+                        echo echo "<script>progressandtext( 0, 'Sorry file upload was failed due to: ERROR CODE IMAGE - UNKNOWN: File was not uploaded due to an unknown reason!' )</script>";;
                     }
                 }
             ?>
