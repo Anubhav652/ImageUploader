@@ -36,10 +36,10 @@
 		</nav>
 		<br><br><br>
 		<div class="container">
+              <span style="font-size: 14pt;">
+            Select image to upload:
+          </span>
 			<form action="upload.php" class="form-horizontal" method="post" enctype="multipart/form-data" role="form">
-    			<span style="font-size: 14pt;">
-    				Select image to upload:
-    			</span>
     			<div class='form-group'>
     			 	<label for="file">
     			 		File to upload
