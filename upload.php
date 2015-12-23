@@ -15,6 +15,26 @@
                     text.setAttribute( 'class', 'text-danger' );
                 }
             }
+            function goodCheck( points, text ) {
+                if ( points == 100 ) {
+                    text.setAttribute( 'class', 'texxt text-success' );
+                    text.innerHTML = "<br><br>" + text.innerHTML + "<br><br>"
+                }
+            }
+            function proUpdate( progress ) {
+                var pro = document.getElementById( "proshow" );
+                var cl = "text text-danger"
+                if (progress <= 25) {
+                    cl = "text text-danger"
+                } else if (progress <= 50) {
+                    cl = "text text-warning"
+                } else if (progress <= 75) { 
+                    cl = "text text-primary"
+                } else if (progress <= 100) {
+                    cl = "text text-success"
+                }
+                pro.setAttribute( 'class', cl )
+            }
             function progressandtext( p, t ) {
                 var progressBar = document.getElementById( 'pro' );
                 var text = document.getElementById( 'text' );
@@ -22,6 +42,8 @@
                 progressBar.setAttribute( 'style', 'width: ' + p + '%' );
                 text.innerHTML = t;
                 dangerCheck( p, text );
+                goodCheck( p, text );
+                proUpdate( p );
             }
         </script>
     </head>
@@ -56,15 +78,17 @@
             <b class="text-primary" id="text">Please wait, uploading the image!</b>
             <div class="progress">
                 <div class="progress-bar" role="progressbar" aria-valuenow="0"
-                aria-valuemin="0" aria-valuemax="50" style="width:1%" id="pro">
-                <span class="sr-only"></span>
+                aria-valuemin="0" aria-valuemax="50" style="width:1%" id="pro"><b id="proshow" style="font-size: 12pt;">0%</b>
+                <span class="sr-only"></span>   
             </div>
         </div>
             <?php
                 $target_dir = "uploads/";
-                $target_file = $target_dir . basename($_FILES["fileToUpload"]["name"]);
-                $uploadOk = 1;
+                $target_file = $target_dir .   basename($_FILES["fileToUpload"]["name"]);
                 $imageFileType = pathinfo($target_file,PATHINFO_EXTENSION);
+                $target_file_to_upload = $target_dir.hash( "md5", basename( $_FILES['fileToUpload']['name'])).'.'.$imageFileType;
+                $uploadOk = 1;
+                
                 // Check if image file is a actual image or fake image
                 if(isset($_POST["submit"])) {
                     $check = getimagesize($_FILES["fileToUpload"]["tmp_name"]);
@@ -89,7 +113,7 @@
                     echo '<script>progressandtext( 0, "Sorry file upload was failed due to: ERROR CODE IMAGE - 002: Target already exists | Resolve this issue by renaming your file | Seeing this error even if file was an image? Contact the webmaster! " )</script>';;
                     return;
                 } else {
-                    echo '<script>progressandtext( 20, "A file with this file name doesn\'t exist - Continue" )</script>';
+                    echo '<script>progressandtext( 10, "A file with this file name doesn\'t exist - Continue" )</script>';
                 }
                 echo '<script>progressandtext( 25, "Checking for file size - Max FILE SIZE is 5MB" )</script>';
                 // Check file size
@@ -97,33 +121,36 @@
                     echo "<script>progressandtext( 0, 'Sorry file upload was failed due to: ERROR CODE IMAGE - 003: File size was more than 5MB!' )</script>";;
                     return;
                 } else {
-                    echo '<script>progressandtext( 30, "File size is less than 5 MB - Continue" )</script>';
+                    echo '<script>progressandtext( 20, "File size is less than 5 MB - Continue" )</script>';
                 }
                 // Allow certain file formats
-                echo '<script>progressandtext( 35, "Checking for file extensions - Only JPG, JPEG and PNG files are allowed!" )</script>';
+                echo '<script>progressandtext( 40, "Checking for file extensions - Only JPG, JPEG and PNG files are allowed!" )</script>';
                 if($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg" ) {
-                    echo "<script>progressandtext( 0, 'Sorry file upload was failed due to: ERROR CODE IMAGE - 004: File was not uploaded due to the extension of the file. Allowed extensions are: JPG, JPEG, PNG.' )</script>";;
+                    echo $imageFileType;
+                    echo "<script>progressandtext( 0, 'Sorry file upload was failed due to: ERROR CODE IMAGE - 004: EXTENSION_ERROR: Wrong extension, allowed ones are PNG, JPG and JPEG. You may request to allow more extensions! EXTENSION_FOUND: ".$imageFileType."')</script>";;
                     return;
                 }
                 if ($uploadOk == 1) {
-                    echo '<script>progressandtext( 25, "Checking for file size - Max FILE SIZE is 5MB" )</script>';
+                    echo '<script>progressandtext( 55, "Checking for file size - Max FILE SIZE is 5MB" )</script>';
                 }
                 // Check if $uploadOk is set to 0 by an error
-                echo '<script>progressandtext( 30, "Preparing to upload the file!" )</script>';
+                echo '<script>progressandtext( 60, "Preparing to upload the file!" )</script>';
                 if ($uploadOk == 0) {
                     echo "<script>progressandtext( 0, 'Sorry file upload was failed due to: ERROR CODE IMAGE - UNKNOWN: File was not uploaded due to an unknown reason!' )</script>";
                     // if everything is ok, try to upload file
                 } 
                 else {
-                    echo '<script>progressandtext( 40, "File is ready to be uploaded - Uploading" )</script>';
-                    echo '<script>progressandtext( 45, "File is now uploading" )</script>'; 
-                    if (move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file)) {
-                        $handle = fopen("uploads/".basename( $_FILES["fileToUpload"]["name"]).'.info', "w+");
-                        fwrite( $handle, $_POST['author'] );
-                        echo "<script>progressandtext( 50, 'You have uploaded ".basename( $_FILES["fileToUpload"]["name"])." file!' )</script>";
+                    echo '<script>progressandtext( 70, "File is ready to be uploaded - Uploading" )</script>';
+                    echo '<script>progressandtext( 80, "File is now uploading" )</script>'; 
+                    if (move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file_to_upload)) {
+                        $handle = fopen("uploads/".hash( "md5", basename( $_FILES["fileToUpload"]["name"]) ).'.'.$imageFileType.'.info', "w+");
+                        $format = $_POST['author'].',No,'.date("d/m/Y l");
+                        fwrite( $handle, $format);
+                        echo "<script>progressandtext( 100, 'You have uploaded ".basename( $_FILES["fileToUpload"]["name"])." file!' )</script>";
+                        echo '<button class="btn btn-success" onclick="location.href = \'uploads/view.php?name='.hash( "md5", basename( $_FILES["fileToUpload"]["name"]) ).'.'.$imageFileType.'&redirect=index.php\'">View file!</button>';
                     }
                     else {
-                        echo echo "<script>progressandtext( 0, 'Sorry file upload was failed due to: ERROR CODE IMAGE - UNKNOWN: File was not uploaded due to an unknown reason!' )</script>";;
+                        echo "<script>progressandtext( 0, 'Sorry file upload was failed due to: ERROR CODE IMAGE - UNKNOWN: File was not uploaded due to an unknown reason!' )</script>";
                     }
                 }
             ?>
