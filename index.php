@@ -1,3 +1,4 @@
+
 <!DOCTYPE HTML>
 <html lang="en">
 	<head>
@@ -77,16 +78,29 @@
 					$directories = array_diff(scandir($target), $weeds);   
 					foreach($directories as $value) {
    						if ( strpos( $value, ".info" ) == false ) {
-
-	   						if ( $uploads == 4 ) {
-   								echo '<br>';
-   								$uploads = 0;
-   							}
-      						$uploads = $uploads+1;
-      						$totaluploads = $totaluploads+1;
-      						echo '<a href="uploads/view.php?name='.$value.'"> <img class="img-thumbnail" src="uploads/'.$value.'" width="50" height="50" /> </a>';
+                            if ( $value != "view.php" ) { 
+	   						    if ( $uploads == 4 ) {
+   								     echo '<br>';
+   								     $uploads = 0;
+   							    }
+                            $fo = fopen( 'uploads/'.$value.'.info', "r" );
+                            $re = fread( $fo, filesize( 'uploads/'.$value.".info") );
+                            $expo = "";
+                            if (explode( ",", $re ) ) {
+                                $expo = explode( ",", $re );
+                            }
+                            if (isset( $expo[1] )) {
+                                if ($expo[1] == "Yes") {
+                                // Do nothing!
+                                } else {
+                                $uploads = $uploads+1;
+                                $totaluploads = $totaluploads+1;
+                                echo '<a href="uploads/view.php?name='.$value.'&redirect=index.php"> <img class="img-thumbnail" src="uploads/'.$value.'" width="50" height="50" /> </a>';
+                            }
+                            } 
 						}		 
 					}
+                }
 					if( $totaluploads == 0 ) {
 						echo '<span style="color: red; font-size: 12pt;"> No images were uploaded. </span>';
 					}
