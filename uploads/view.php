@@ -18,19 +18,25 @@ function Size($path)
 
     return $bytes;
 }
+function Extension($patch) {
+	$path = pathinfo( $patch );
+	return $path[ 'extension' ];
+}
 	$author = "";
 	if( isset( $_GET['name'] ) ) {
 		if (file_exists($_GET['name'].'.info')) {
 			$file = fopen( $_GET['name'].'.info', "r" );
 			$r = fread( $file, filesize( $_GET['name'].'.info' ) );
-			$author = $r;
+			$exp = explode( ",", $r );
+			$author = $exp[0];
+			$date = $exp[2] or "Unknown";
 			fclose( $file );
 		} else {
-			die( );
+			echo "<script>document.location = '../index.php'</script>";
 			return;
 		}
 	} else {
-		die( );
+		die( 'ERROR: Restricted place for you!' );
 		return;
 	}
 ?>
@@ -74,6 +80,7 @@ function Size($path)
 			<br>
 			<br>
 			<div class="block" >
+				<img <?php echo 'src='.$_GET['name']; ?> /><br>
 				<span style="font-size: 18pt; text-align: center;">
 					Author: <?php 
 							echo $author;
@@ -83,11 +90,51 @@ function Size($path)
 					<br>
 					File size: <?php echo Size( $_GET['name'] ); ?>
 					<br>
+					File extension: <?php echo Extension( $_GET['name'] ); ?>
+					<br>
+					Upload date: <?php echo $date; ?>
+					<br>
 					<a href=<?php echo $_GET['name']; ?> download>Download file (click this text)</a>
+					<br>
+					<?php 
+						if (isset($_GET['redirect'])) {
+							if(isset($_POST['pass'])) {
+								echo '
+								<form method="post" action="../admin2.php" class="form-horizontal" role="form">
+									<div class="form-group">
+										<label for="submit">
+											Ready? Let\'s go back and do some moderation!
+										</label>
+										<input type="submit" value="Click here to go back!" class="btn btn-primary">
+										<input type="hidden" name="username" value="'.$_POST['username'].'">
+										<input type="hidden" name="password" value="'.$_POST['pass'].'">
+									</div>
+								</form>
+								';
+							} elseif(isset($_POST['username'])) {
+								echo '
+								<form method="post" action="../admin2.php" class="form-horizontal" role="form">
+									<div class="form-group">
+										<label for="submit">
+											Ready? Let\'s go back and do some moderation!
+										</label>
+										<input type="submit" value="'.$_POST['username'].'" class="btn btn-primary">
+										<input type="hidden" name="username" value="'.$_POST['username'].'">
+									</div>
+								</form>
+								';
+						} else {
+								if ($_GET['redirect'] == "admin2.php") {
+									$_GET['redirect'] = "index.php";
+								}
+								echo '<a href="../'.$_GET['redirect'].'">Go back!</a>';
+							}
+						}
+
+					?>
 				</span>
 				<br>
 				<br>
-				<img <?php echo 'src='.$_GET['name']; ?> />
 				<br>
 				<br>
 		</div>
