@@ -1,10 +1,22 @@
 <?php
 	$loadwebsite = null;
-	if (isset( $_GET['pass'] ) ) {
-		$v = $_GET['pass'];
-		require( 'adminconf.php' );
-		if (sha1( $securekey )==$v) {
-			$loadwebsite = true;
+	include 'acheck.php';
+	function call_out( ) {
+		return ;
+	}
+	if (isset( $_POST['password'] ) ) {
+		$check = checkLogin( $_POST['username'], $_POST['password'] );
+		if ($check === true) {
+		 	$loadwebsite = true;
+		} else {
+			echo '<script>document.location = "admin.php?error"</script>';
+		}
+	} elseif (isset( $_POST['username'] ) ) {
+		$check = checkLogin( $_POST['username'] );
+		if ($check === true) {
+		 	$loadwebsite = true;
+		} else {
+			echo '<script>document.location = "admin.php?error"</script>';
 		}
 	}
 	
@@ -13,15 +25,39 @@
 			$action = $_GET['action'];
 			$targetfile = $_GET['target'];
 			if ($action == 'delete') {
-				unlink('uploads/'.$targetfile);
-				unlink('uploads/'.$targetfile.'.info');
+				if (file_exists('uploads/'.$targetfile)) {
+					chmod('uploads', 0666);
+					unlink('uploads/'.$targetfile);
+					unlink('uploads/'.$targetfile.'.info');
+				}
 			} elseif ($action == 'author') {
 				$targetfile = fopen( 'uploads/'.$_GET['target'].'.info', "w" );
 				$newauth = $_GET['authorname'];
 				fwrite($targetfile, $newauth);
 				fclose( $targetfile );
+			} elseif ($action == "restrict") {
+				$targetfile = fopen( 'uploads/'.$_GET['target'].'.info', "w" );
+				$targetread = readfile( 'uploads/'.$_GET['target'].'.info' );
+				fwrite($targetfile, $targetread.',Yes');
+				fclose( $targetfile );				
+			} elseif ($action == "remover") {
+				$targetfile = fopen( 'uploads/'.$_GET['target'].'.info', "w" );
+				$targetread = readfile( 'uploads/'.$_GET['target'].'.info' );
+				$expo2 = explode(",", $targetread);
+				fwrite($targetfile, $expo2[0]);
+				fclose( $targetfile );
 			}
 		}
+	function getInfo( $filePath ) {
+		$open = fopen( $filePath, "r" );
+		$read = fread( $open, filesize( $filePath ) );
+		if ( strpos($read,',') === false ) {
+			return explode( ",", $read.',No' );
+		} else {
+			$expo = explode( ",", $read );
+			return $expo;
+		}
+	}
 	echo ' 
 <!DOCTYPE HTML>
 <html lang="en">
@@ -34,6 +70,14 @@
 		<link rel="stylesheet" href="css/bootstrap.min.css">
   		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
   		<script src="js/bootstrap.min.js"></script>
+  		<script>
+  			function callOut() {
+			var e = document.getElementById("sel1");
+			var strUser = e.options[e.selectedIndex].text;
+			return strUser;
+			}			
+  		</script>
+  		<script src="js/images.js"></script>
 	</head>
 	<body oncontextmenu="return false;">
   		<nav class="navbar navbar-inverse">
@@ -61,30 +105,6 @@
 		</nav>
 		<br><br><br>
 		<div class="container">
-			<form action="upload.php" class="form-horizontal" method="post" enctype="multipart/form-data" role="form">
-    			<span style="font-size: 14pt;">
-    				Select image to upload:
-    			</span>
-    			<div class="form-group">
-    			 	<label for="file">
-    			 		File to upload
-    			 	</label>
-    			 	<br>
-    				<input type="file" name="fileToUpload" id="fileToUpload">
-    			</div>
-    			<div class="form-group">
-    				<label for="edit">
-    					Type your name:
-    				</label>
-   	 				<input type="edit" name="author" id="name" value="Your Name">
-   	 			</div>
-   	 			<div class="form-group">
-   	 				<label for="submit">
-   	 					Click to upload
-   	 				</label>
-   	 				<input type="submit" value="Upload Image" name="submit" class="btn btn-default">
-				</div>
-			</form>
 			<br>
 			<br>
 		<div class="block" >
@@ -94,24 +114,47 @@
 				$weeds = array('.', '..', 'view.php');
 				$uploads = 0;
 				$totaluploads = 0;
-				$directories = array_diff(scandir($target), $weeds);   
-				foreach($directories as $value) {
-   					if ( strpos( $value, ".info" ) == false ) {
-	   					if ( $uploads == 2 ) {
-   							echo '<br><br><br><br><br>';
-   							$uploads = 0;
-   						}
-      					$uploads = $uploads+1;
-      					$totaluploads = $totaluploads+1;
-      					$v = $_GET['pass'];
-      					echo '<a href="uploads/view.php?name='.$value.'"> <img class="img-thumbnail" src="uploads/'.$value.'" width="50" height="50" /> </a>';
-						echo '<br><b style="color: grey; text-decoration: none; font-size: 7pt;">Author name: '.file_get_contents('uploads/'.$value.'.info').'</b><br><a class="button" href="admin2.php?pass='.$v.'&action=delete&target='.$value.'" style="color: red; text-decoration: none; font-size: 10pt; height: 50px;">Delete</a>';
-						echo '<br><button class="btn btn-default" id="changeAuthor">Change author name</button>';
-						echo '<br><button class="btn btn-default" id="suspendImage">Suspend image</button>';
-					}		 
-				}
-				if( $totaluploads == 0 ) {
-					echo '<span style="color: red; font-size: 12pt;"> No images were uploaded. </span>';
-				}
+				$directories = array_diff(scandir($target), $weeds);
+				echo '
+				<span id="imagetoshow"></span>
+				<div class="form-group">
+  					<label for="sel1">Select list:</label>
+  					<select class="form-control" id="sel1">';
+  					$v = $_POST['username'];
+      				if (isset($_POST['password'])) {
+      					$v = $v.",".$_POST['password'];
+      				}
+					foreach($directories as $value) {
+   						if ( strpos( $value, ".info" ) == false ) {
+   							if ($value == "view.php") {
+
+   							} else {
+	   							if ( $uploads == 2 ) {
+   									echo '<br><br><br><br><br>';
+   									$uploads = 0;
+   								}
+      							$uploads = $uploads+1;
+      							$totaluploads = $totaluploads+1;
+      							$ar = getInfo('uploads/'.$value.'.info' );
+      							$author = $ar[0];
+      							$restricted = $ar[1];
+      							echo '<option class="" id="'.$v.'" value="'.$value.'">Author: '.$author.' |  Image name: '.$value.' | Restricted: '.$restricted.'</option>';
+							}
+						}		 
+					}
+
+					echo '</select>';
+					echo '</div>';
+					if( $totaluploads == 0 ) {
+						echo '<span style="color: red; font-size: 12pt;"> No images were uploaded. </span>';
+					}
+					$some = call_out();
+					echo '<br>';
+					echo '<button id="'.$v.'" class="btn btn-default delete">Delete</button>';
+					echo '<button id="'.$v.'" class="btn btn-default author">Change author name</button>';
+					echo '<button id="'.$v.'" class="btn btn-default imaged">View image details</button>';
+					echo '<button id="'.$v.'" class="btn btn-default restrict">Restrict image to admins</button>';
+					
+
 			}
 		?>
