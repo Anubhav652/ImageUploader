@@ -1,4 +1,7 @@
 <!DOCTYPE HTML>
+<?php
+	include 'adminconf.php';
+?>
 <html lang="en">
 	<head>
 		<meta charset="utf-8">
@@ -38,35 +41,42 @@
 			<br>
 			<br>
 			<br>
-				<form method="post" action="" class="form-horizontal" role="form">
-					<span style="font-size: 18pt;">
-						Adminstration login
-					</span><br>
-					<div class="form-group">
-						<label for="password">
-							Enter security key
-						</label>
-						<input type="password" name="password">
-					</div>
-					<div class="form-group">
-						<label for="submit">
-							Click to login
-						</label>
-						<input type="submit" value="Login" class="btn btn-default">
-					</div>
+			<form method="post" action="admin2.php" class="form-horizontal" role="form">
+				<span style="font-size: 18pt;">
+					Adminstration login
+				</span>
+				<br>
+				<div class="form-group">
+					<label for="username">
+						Enter username
+					</label>
+					<input type="edit" name="username">
+					<?php
+						if ($security) {
+							echo '
+							<br>
+							<br>
+							<label for="password">
+								Enter password
+							</label>
+							<input type="password" name="password">
+							';
+						}
+					?>
+				</div>
+				<div class="form-group">
+					<label for="submit">
+						Click to login
+					</label>
+					<input type="submit" value="Login" class="btn btn-primary">
+				</div>
 				</form>
+				<?php
+				    if (isset( $_GET[ 'error' ] ) ) {
+    					echo '<b class="label label-danger" style="font-size: 10pt;">ERROR: Wrong username/password provided or session timed out! If it is still not working, contact the owner!</b>';
+    				}
+				?>
 			</div>
 	</body>
 </html>
-<?php
-	require( 'adminconf.php' );
-    if (isset( $_POST[ 'password' ] ) ) {
-    	$value = $_POST[ 'password' ];
-    	if ( $value == $securekey ) {
-    		$sec = sha1( $securekey );
-    		echo "<script>window.location = 'admin2.php?pass=".$sec."'</script>";
-    	} else {
-    		echo 'False password';
-    	}
-    }
-?>
+
