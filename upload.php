@@ -28,7 +28,7 @@
                     cl = "text text-danger"
                 } else if (progress <= 50) {
                     cl = "text text-warning"
-                } else if (progress <= 75) { 
+                } else if (progress <= 75) {
                     cl = "text text-primary"
                 } else if (progress <= 100) {
                     cl = "text text-success"
@@ -57,14 +57,54 @@
                 </div>
                 <div>
                     <ul class="nav navbar-nav">
-                        <li class="active">
+                        <li>
                             <a href="index.php">
                                 Home
                             </a>
                         </li>
-                        <li>
-                            <a href="admin.php">
-                                Admin
+                        <?php
+                            include 'uploads/images_sqlite.php';
+                            if (isset( $_COOKIE['LoggedIn'] ) ) {
+                                echo '
+                                    <li>
+                                        <a href="profile.php">
+                                            Profile
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="logout.php">
+                                            Logout
+                                        </a>
+                                    </li>
+                                ';
+                                if (isAdmin(  $_COOKIE['LoggedIn'] ) == "True" ) {
+                                    echo '
+                                        <li>
+                                            <a href="admin2.php">
+                                                Admin Panel
+                                            </a>
+                                        </li>
+                                    ';
+                                }
+                            } else {
+
+                            echo '
+                                <li>
+                                   <a href="login.php">
+                                    Login
+                                </a>
+                                </li>
+                                <li>
+                                    <a href="register.php">
+                                        Register
+                                    </a>
+                                </li>
+                            ';
+                            }
+                        ?>
+                        <li class="active">
+                            <a href="">
+                                Uploading a image
                             </a>
                         </li>
                     </ul>
@@ -79,16 +119,17 @@
             <div class="progress">
                 <div class="progress-bar" role="progressbar" aria-valuenow="0"
                 aria-valuemin="0" aria-valuemax="50" style="width:1%" id="pro"><b id="proshow" style="font-size: 12pt;">0%</b>
-                <span class="sr-only"></span>   
+                <span class="sr-only"></span>
             </div>
         </div>
             <?php
                 $target_dir = "uploads/";
                 $target_file = $target_dir .   basename($_FILES["fileToUpload"]["name"]);
+                $target_file2 = $target_dir .   md5(basename($_FILES["fileToUpload"]["name"]));
                 $imageFileType = pathinfo($target_file,PATHINFO_EXTENSION);
-                $target_file_to_upload = $target_dir.hash( "md5", basename( $_FILES['fileToUpload']['name'])).'.'.$imageFileType;
+                $target_file_to_upload = $target_dir . hash( "md5", basename( $_FILES["fileToUpload"]["name"]) ).'.'.$imageFileType;
                 $uploadOk = 1;
-                
+
                 // Check if image file is a actual image or fake image
                 if(isset($_POST["submit"])) {
                     $check = getimagesize($_FILES["fileToUpload"]["tmp_name"]);
@@ -109,7 +150,7 @@
                 }
                 // Check if file already exists
                 echo '<script>progressandtext( 15, "Checking for file existence" )</script>';
-                if (file_exists($target_file)) {
+                if (file_exists($target_file2.'.'.$imageFileType)) {
                     echo '<script>progressandtext( 0, "Sorry file upload was failed due to: ERROR CODE IMAGE - 002: Target already exists | Resolve this issue by renaming your file | Seeing this error even if file was an image? Contact the webmaster! " )</script>';;
                     return;
                 } else {
@@ -138,22 +179,29 @@
                 if ($uploadOk == 0) {
                     echo "<script>progressandtext( 0, 'Sorry file upload was failed due to: ERROR CODE IMAGE - UNKNOWN: File was not uploaded due to an unknown reason!' )</script>";
                     // if everything is ok, try to upload file
-                } 
+                }
                 else {
                     echo '<script>progressandtext( 70, "File is ready to be uploaded - Uploading" )</script>';
-                    echo '<script>progressandtext( 80, "File is now uploading" )</script>'; 
+                    echo '<script>progressandtext( 80, "File is now uploading" )</script>';
                     if (move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file_to_upload)) {
-                        $handle = fopen("uploads/".hash( "md5", basename( $_FILES["fileToUpload"]["name"]) ).'.'.$imageFileType.'.info', "w+");
-                        $format = $_POST['author'].',No,'.date("d/m/Y l");
-                        fwrite( $handle, $format);
+                        $name = hash( "md5", basename( $_FILES["fileToUpload"]["name"]) ).'.'.$imageFileType;
+                        $date = date("d/m/Y l");
+                        $author = $_POST['author'];
+                        $restrict = 'No';
+                        $originalName = basename( $_FILES["fileToUpload"]["name"]);
+                        $image = insertImage( $name, $date, $restrict, $author, $originalName );
+                        $det = getImageDetails( $name );
                         echo "<script>progressandtext( 100, 'You have uploaded ".basename( $_FILES["fileToUpload"]["name"])." file!' )</script>";
                         echo '<button class="btn btn-success" onclick="location.href = \'uploads/view.php?name='.hash( "md5", basename( $_FILES["fileToUpload"]["name"]) ).'.'.$imageFileType.'&redirect=index.php\'">View file!</button>';
+                        if (isset( $_COOKIE['LoggedIn'] ) ) {
+                            insertLog( $_COOKIE['LoggedIn'], " - ".$date.": ".basename( $_FILES["fileToUpload"]["name"]). " has been uploaded." );
+                        }
                     }
                     else {
                         echo "<script>progressandtext( 0, 'Sorry file upload was failed due to: ERROR CODE IMAGE - UNKNOWN: File was not uploaded due to an unknown reason!' )</script>";
                     }
                 }
             ?>
-        </div> 
+        </div>
     </body>
 </html>
