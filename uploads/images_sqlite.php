@@ -7,6 +7,7 @@ $database = "images";
 $columns = "image_name,restricted,author,date,original_image_name";
 // Create connection
 $conn = new mysqli($servername, $username, $password, $database);
+$conn->query("CREATE TABLE IF NOT EXISTS image(image_name TEXT,restricted TEXT,author TEXT,date TEXT,original_image_name TEXT )");
 $conn->query("CREATE TABLE IF NOT EXISTS comments( image_name TEXT, Comment TEXT, CommentAuthor TEXT )");
 $conn->query("CREATE TABLE IF NOT EXISTS login( hashedUsername TEXT, hashedPassword TEXT, isAdmin INT )");
 $conn->query("CREATE TABLE IF NOT EXISTS logs( username TEXT, Log TEXT )");
